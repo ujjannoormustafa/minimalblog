@@ -32,8 +32,16 @@ export default async function AboutPage() {
         console.error("Auth error in About page:", e);
     }
 
+    interface TeamMember {
+        id: string;
+        name: string;
+        avatar: string;
+        bio: string;
+        role: string;
+    }
+
     // Fetch all users
-    let teamMembers = [];
+    let teamMembers: TeamMember[] = [];
     try {
         await connectDB();
         const users = await User.find({}).select('-password').lean();
