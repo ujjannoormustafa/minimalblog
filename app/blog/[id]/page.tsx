@@ -192,7 +192,6 @@ export default function BlogPost({ params }: { params: Promise<{ id: string }> }
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {related.map(p => (
-                            // @ts-expect-error _id mapped to id
                             <BlogCard key={p._id} post={toCardPost(p)} />
                         ))}
                     </div>

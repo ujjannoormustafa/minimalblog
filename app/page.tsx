@@ -147,7 +147,6 @@ function HomeContent() {
             </h2>
             <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg,#27272a,transparent)' }} />
           </div>
-          {/* @ts-expect-error _id mapped to id */}
           <BlogCard post={toCardPost(featuredPost)} featured />
         </section>
       )}
@@ -178,7 +177,6 @@ function HomeContent() {
                 <div key={post._id}
                   className="animate-fade-in-up"
                   style={{ animationDelay: `${i * 80}ms` }}>
-                  {/* @ts-expect-error _id mapped to id */}
                   <BlogCard post={toCardPost(post)} />
                 </div>
               ))}
