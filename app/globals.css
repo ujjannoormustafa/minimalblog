@@ -1,0 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+/* ── Design tokens used in custom utility classes ── */
+:root {
+  --accent: #8b5cf6;
+  --accent2: #ec4899;
+  --accent-glow: rgba(139, 92, 246, 0.2);
+  --gradient: linear-gradient(135deg, #8b5cf6, #ec4899);
+}
+
+/* ── Base ── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #09090b;
+  /* zinc-950 */
+  color: #f4f4f5;
+  /* zinc-100 */
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* ── Keyframes ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Animation classes ── */
+.animate-fade-in-up {
+  animation: fadeInUp 0.55s ease both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.35s ease both;
+}
+
+.delay-100 {
+  animation-delay: 0.10s;
+}
+
+.delay-200 {
+  animation-delay: 0.20s;
+}
+
+.delay-300 {
+  animation-delay: 0.30s;
+}
+
+.delay-400 {
+  animation-delay: 0.40s;
+}
+
+.delay-500 {
+  animation-delay: 0.50s;
+}
+
+/* ── Gradient text ── */
+.gradient-text {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glass card base ── */
+.glass {
+  background: #18181b;
+  /* zinc-900 */
+  border: 1px solid #27272a;
+  /* zinc-800 */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* ── Card hover lift ── */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.45) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px var(--accent-glow);
+}
+
+/* ── Reading Progress Bar ── */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--gradient);
+  z-index: 200;
+  transition: width 0.1s linear;
+}
+
+/* ── Blog prose content ── */
+.blog-content p {
+  color: #a1a1aa;
+  /* zinc-400 */
+  line-height: 1.85;
+  font-size: 1.0625rem;
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+}
+
+/* ── Ambient orbs ── */
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.orb-purple {
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, transparent 70%);
+}
+
+.orb-pink {
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.18) 0%, transparent 70%);
+}
+
+/* ── Nav link underline animation ── */
+.nav-link {
+  position: relative;
+  font-size: 14px;
+  font-weight: 500;
+  color: #a1a1aa;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--gradient);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #f4f4f5;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
