@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { CATEGORIES } from '../app/data';
+import { CATEGORIES } from '../data';
 import { useAuth } from '@/context/AuthContext';
 
 interface Props {

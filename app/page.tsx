@@ -3,8 +3,8 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CATEGORIES } from './data';
-import Header from '@/components/Header';
-import BlogCard from '@/components/BlogCard';
+import Header from './components/Header';
+import BlogCard from './components/BlogCard';
 
 interface Post {
   _id: string;
@@ -121,7 +121,7 @@ function HomeContent() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
-            Loading posts from MongoDB…
+            Loading posts
           </div>
         </div>
       )}
@@ -194,7 +194,7 @@ function HomeContent() {
       <section className="border-y border-zinc-800/60 py-20 px-6"
         style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.07), rgba(236,72,153,0.05))' }}>
         <div className="max-w-md mx-auto text-center">
-          <div className="text-4xl mb-4">✉️</div>
+          {/* <div className="text-4xl mb-4">✉️</div> */}
           <h2 className="text-2xl font-bold text-zinc-100 mb-3 tracking-tight">Stay in the loop</h2>
           <p className="text-zinc-400 text-sm mb-7 leading-relaxed">
             Get the best stories delivered to your inbox. No spam, ever.

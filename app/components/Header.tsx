@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { CATEGORIES } from '../app/data';
+import { CATEGORIES } from '../data';
 import AddArticleModal from './AddArticleModal';
 import { useAuth } from '@/context/AuthContext';
+import EditProfileModal from './EditProfileModal';
 
 export default function Header() {
     const [scrolled, setScrolled] = useState(false);
@@ -13,6 +14,7 @@ export default function Header() {
     const [catOpen, setCatOpen] = useState(false);
     const [addOpen, setAddOpen] = useState(false);
     const [userOpen, setUserOpen] = useState(false);
+    const [editUserOpen, setEditUserOpen] = useState(false);
     const userRef = useRef<HTMLDivElement>(null);
     const { user, logout } = useAuth();
     const router = useRouter();
@@ -109,6 +111,11 @@ export default function Header() {
                                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg>
                                                 Dashboard
                                             </Link>
+                                            <button onClick={() => { setUserOpen(false); setEditUserOpen(true); }}
+                                                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-400 rounded-xl hover:bg-violet-500/10 hover:text-violet-400 transition-all cursor-pointer border-0 bg-transparent text-left">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                                                Edit Profile
+                                            </button>
                                             <button onClick={() => { setUserOpen(false); handleLogout(); }}
                                                 className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-400 rounded-xl hover:bg-red-500/10 hover:text-red-400 transition-all cursor-pointer border-0 bg-transparent text-left">
                                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
@@ -169,6 +176,10 @@ export default function Header() {
                                     className="block py-3 text-zinc-400 text-sm border-b border-zinc-800/60 no-underline hover:text-violet-400 transition-colors">
                                     Dashboard
                                 </Link>
+                                <button onClick={() => { setEditUserOpen(true); setMobileOpen(false); }}
+                                    className="w-full text-left py-3 text-zinc-400 text-sm border-b border-zinc-800/60 no-underline hover:text-violet-400 transition-colors cursor-pointer border-0 bg-transparent">
+                                    Edit Profile
+                                </button>
                                 <button onClick={() => { handleLogout(); setMobileOpen(false); }}
                                     className="w-full text-left py-3 text-zinc-500 text-sm cursor-pointer border-0 bg-transparent hover:text-red-400 transition-colors">
                                     Sign Out
@@ -189,6 +200,12 @@ export default function Header() {
                 <AddArticleModal
                     onClose={() => setAddOpen(false)}
                     onSuccess={() => window.location.reload()}
+                />
+            )}
+            {editUserOpen && (
+                <EditProfileModal
+                    onClose={() => setEditUserOpen(false)}
+                    onSuccess={() => { }}
                 />
             )}
         </>

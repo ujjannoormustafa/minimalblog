@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { CATEGORIES } from '../data';
-import AddArticleModal from '@/components/AddArticleModal';
+import AddArticleModal from '@/app/components/AddArticleModal';
+import EditProfileModal from '@/app/components/EditProfileModal';
 
 interface Post {
     _id: string;
@@ -210,6 +211,7 @@ export default function Dashboard() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [postsLoading, setPostsLoading] = useState(true);
     const [addOpen, setAddOpen] = useState(false);
+    const [editProfileOpen, setEditProfileOpen] = useState(false);
     const [editPost, setEditPost] = useState<Post | null>(null);
     const [deletePost, setDeletePost] = useState<Post | null>(null);
     const [filterCat, setFilterCat] = useState('All');
@@ -277,11 +279,20 @@ export default function Dashboard() {
                             New Article
                         </button>
                         <div className="flex items-center gap-2 pl-3 border-l border-zinc-800">
-                            <div className="w-8 h-8 rounded-full bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400 font-bold text-sm overflow-hidden">
+                            <button
+                                onClick={() => setEditProfileOpen(true)}
+                                className="w-8 h-8 rounded-full bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400 font-bold text-sm overflow-hidden group relative cursor-pointer"
+                                title="Edit Profile"
+                            >
                                 {user.avatar
-                                    ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                                    ? <img src={user.avatar} alt={user.name} className="w-full h-full object-cover group-hover:opacity-40 transition-opacity" />
                                     : user.name.charAt(0).toUpperCase()}
-                            </div>
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                </div>
+                            </button>
                             <span className="text-zinc-300 text-sm font-medium hidden sm:block">{user.name}</span>
                         </div>
                         <button onClick={handleLogout}
@@ -438,6 +449,12 @@ export default function Dashboard() {
                 <AddArticleModal
                     onClose={() => setAddOpen(false)}
                     onSuccess={fetchPosts}
+                />
+            )}
+            {editProfileOpen && (
+                <EditProfileModal
+                    onClose={() => setEditProfileOpen(false)}
+                    onSuccess={() => { }}
                 />
             )}
             {editPost && (

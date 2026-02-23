@@ -1,34 +1,15 @@
-import Header from '@/components/Header';
+import Header from '../components/Header';
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import { verifyToken } from '@/lib/jwt';
+import { connectDB } from '@/lib/mongodb';
+import User from '@/lib/models/User';
 
 export const metadata: Metadata = {
     title: 'About — MinimalBlog',
     description: 'Learn about MinimalBlog — thoughtful writing on technology, design, travel, and lifestyle.',
 };
-
-const TEAM = [
-    {
-        name: 'Alex Morgan', role: 'Technology & Remote Work',
-        bio: 'Covering the intersection of technology, productivity, and human potential.',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
-    },
-    {
-        name: 'Sarah Chen', role: 'Lifestyle & Habits',
-        bio: 'Exploring minimalism, mindful living, and the habits that help us thrive.',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
-    },
-    {
-        name: 'Marco Ricci', role: 'Travel & Culture',
-        bio: 'Discovering hidden corners of the world and the stories that live there.',
-        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
-    },
-    {
-        name: 'Priya Sharma', role: 'Design & Creativity',
-        bio: 'Making the case for beautiful, intentional design in everything we create.',
-        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200',
-    },
-];
 
 const MISSION = [
     { icon: '✍️', title: 'Quality Over Quantity', desc: 'Every post is carefully researched and written to give you real value — not filler content.' },
@@ -37,7 +18,38 @@ const MISSION = [
     { icon: '♻️', title: 'Evergreen Content', desc: "We focus on ideas that remain relevant long after they're published." },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+    // Determine current user from cookie
+    let currentUserId = null;
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get('mb_token')?.value;
+        if (token) {
+            const payload = verifyToken(token);
+            if (payload) currentUserId = payload.userId;
+        }
+    } catch (e) {
+        console.error("Auth error in About page:", e);
+    }
+
+    // Fetch all users
+    let teamMembers = [];
+    try {
+        await connectDB();
+        const users = await User.find({}).select('-password').lean();
+        teamMembers = users
+            .filter((u: any) => u._id.toString() !== currentUserId)
+            .map((u: any) => ({
+                id: u._id.toString(),
+                name: u.name,
+                avatar: u.avatar,
+                bio: u.bio,
+                role: 'Writer'
+            }));
+    } catch (e) {
+        console.error("DB error in About page:", e);
+    }
+
     return (
         <main className="min-h-screen bg-zinc-950">
             <Header />
@@ -88,17 +100,31 @@ export default function AboutPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    {TEAM.map((member, i) => (
-                        <div key={member.name}
-                            className="glass card-hover rounded-2xl p-7 text-center animate-fade-in-up"
-                            style={{ animationDelay: `${i * 80}ms` }}>
-                            <img src={member.avatar} alt={member.name}
-                                className="w-16 h-16 rounded-full object-cover mx-auto mb-4 border-2 border-violet-500/30" />
-                            <h3 className="text-sm font-bold text-zinc-100 mb-1">{member.name}</h3>
-                            <div className="text-[11px] font-semibold text-violet-400 tracking-wide mb-3">{member.role}</div>
-                            <p className="text-xs text-zinc-500 leading-relaxed">{member.bio}</p>
+                    {teamMembers.length > 0 ? (
+                        teamMembers.map((member, i) => (
+                            <div key={member.id}
+                                className="glass card-hover rounded-2xl p-7 text-center animate-fade-in-up"
+                                style={{ animationDelay: `${i * 80}ms` }}>
+                                {member.avatar ? (
+                                    <img src={member.avatar} alt={member.name}
+                                        className="w-16 h-16 rounded-full object-cover mx-auto mb-4 border-2 border-violet-500/30" />
+                                ) : (
+                                    <div className="w-16 h-16 rounded-full bg-violet-500/10 border-2 border-violet-500/30 flex items-center justify-center mx-auto mb-4">
+                                        <span className="text-xl font-bold text-violet-400">{member.name.charAt(0).toUpperCase()}</span>
+                                    </div>
+                                )}
+                                <h3 className="text-sm font-bold text-zinc-100 mb-1">{member.name}</h3>
+                                <div className="text-[11px] font-semibold text-violet-400 tracking-wide mb-3">{member.role}</div>
+                                <p className="text-xs text-zinc-500 leading-relaxed line-clamp-3">
+                                    {member.bio || 'This writer hasn\'t added a bio yet.'}
+                                </p>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="col-span-full py-20 text-center">
+                            <p className="text-zinc-500 text-sm">No other writers found.</p>
                         </div>
-                    ))}
+                    )}
                 </div>
             </section>
 
@@ -121,3 +147,4 @@ export default function AboutPage() {
         </main>
     );
 }
+
