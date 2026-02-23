@@ -80,7 +80,7 @@ export default async function AboutPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     {MISSION.map((item, i) => (
                         <div key={item.title}
-                            className="glass card-hover rounded-2xl p-7 animate-fade-in-up"
+                            className="glass card-hover rounded-2xl p-8 animate-fade-in-up"
                             style={{ animationDelay: `${i * 80}ms` }}>
                             <div className="text-3xl mb-4">{item.icon}</div>
                             <h3 className="text-sm font-bold text-zinc-100 mb-2">{item.title}</h3>
