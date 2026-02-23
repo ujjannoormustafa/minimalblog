@@ -2,9 +2,9 @@
 
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '@/components/Header';
 import Link from 'next/link';
-import BlogCard from '@/components/BlogCard';
+import Header from '@/app/components/Header';
+import BlogCard from '@/app/components/BlogCard';
 
 interface Post {
     _id: string;
