@@ -13,6 +13,14 @@ export interface IPost extends Document {
     featured: boolean;
     userId?: string;
     likes: string[];
+    ratings: { userId: string; rating: number }[];
+    comments: {
+        userId: string;
+        userName: string;
+        userAvatar: string;
+        text: string;
+        createdAt: Date;
+    }[];
     createdAt: Date;
 }
 
@@ -30,6 +38,21 @@ const PostSchema = new Schema<IPost>(
         featured: { type: Boolean, default: false },
         userId: { type: String, default: null },
         likes: { type: [String], default: [] },
+        ratings: [
+            {
+                userId: { type: String, required: true },
+                rating: { type: Number, required: true, min: 1, max: 5 },
+            },
+        ],
+        comments: [
+            {
+                userId: { type: String, required: true },
+                userName: { type: String, required: true },
+                userAvatar: { type: String, required: true },
+                text: { type: String, required: true },
+                createdAt: { type: Date, default: Date.now },
+            },
+        ],
     },
     { timestamps: true }
 );
