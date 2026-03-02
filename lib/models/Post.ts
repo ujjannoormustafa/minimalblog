@@ -12,6 +12,7 @@ export interface IPost extends Document {
     authorAvatar: string;
     featured: boolean;
     userId?: string;
+    likes: string[];
     createdAt: Date;
 }
 
@@ -28,6 +29,7 @@ const PostSchema = new Schema<IPost>(
         authorAvatar: { type: String, required: true },
         featured: { type: Boolean, default: false },
         userId: { type: String, default: null },
+        likes: { type: [String], default: [] },
     },
     { timestamps: true }
 );

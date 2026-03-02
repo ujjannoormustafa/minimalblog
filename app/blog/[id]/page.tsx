@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/app/components/Header';
 import BlogCard from '@/app/components/BlogCard';
+import { useAuth } from '@/context/AuthContext';
 
 interface Post {
     _id: string;
@@ -18,6 +19,7 @@ interface Post {
     author: string;
     authorAvatar: string;
     featured?: boolean;
+    likes?: string[];
 }
 
 export default function BlogPost({ params }: { params: Promise<{ id: string }> }) {
@@ -28,6 +30,34 @@ export default function BlogPost({ params }: { params: Promise<{ id: string }> }
     const [related, setRelated] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [progress, setProgress] = useState(0);
+    const { user } = useAuth();
+    const [isLiking, setIsLiking] = useState(false);
+
+    const isLiked = user && post?.likes?.includes(user.id);
+
+    const handleLike = async () => {
+        if (!user) {
+            router.push('/auth');
+            return;
+        }
+
+        if (isLiking || !post) return;
+
+        setIsLiking(true);
+        try {
+            const res = await fetch(`/api/posts/${post._id}/like`, {
+                method: 'POST',
+            });
+            const data = await res.json();
+            if (data.success) {
+                setPost({ ...post, likes: data.likes });
+            }
+        } catch (err) {
+            console.error('Error liking post:', err);
+        } finally {
+            setIsLiking(false);
+        }
+    };
 
     // Reading progress
     useEffect(() => {
@@ -167,7 +197,27 @@ export default function BlogPost({ params }: { params: Promise<{ id: string }> }
                         {post.category}
                     </span>
                     <div className="flex items-center gap-2">
-                        <span className="text-zinc-600 text-xs font-medium mr-1">Share:</span>
+                        <button
+                            onClick={handleLike}
+                            disabled={isLiking}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${isLiked
+                                ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                                : 'bg-zinc-900/50 text-zinc-400 border-zinc-800 hover:bg-violet-500/10 hover:text-violet-400 hover:border-violet-500/30'
+                                }`}
+                        >
+                            <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill={isLiked ? "currentColor" : "none"}
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                            >
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.77-8.77 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                            </svg>
+                            {isLiked ? 'Liked' : 'Like'} · {post.likes?.length || 0}
+                        </button>
+                        <span className="text-zinc-600 text-xs font-medium mr-1 ml-2">Share:</span>
                         {['𝕏', 'in', 'Link'].map(s => (
                             <button key={s}
                                 className="px-3 py-1.5 rounded-lg text-xs font-bold text-zinc-400 border border-zinc-800 bg-zinc-900/50 hover:bg-violet-500/10 hover:text-violet-400 hover:border-violet-500/30 transition-all cursor-pointer">

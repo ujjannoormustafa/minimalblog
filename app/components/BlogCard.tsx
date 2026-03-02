@@ -1,4 +1,7 @@
 import Link from 'next/link';
+import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 interface Post {
     _id?: string;
@@ -13,6 +16,7 @@ interface Post {
     author: string;
     authorAvatar: string;
     featured?: boolean;
+    likes?: string[];
 }
 
 interface BlogCardProps {
@@ -21,6 +25,39 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ post, featured = false }: BlogCardProps) {
+    const { user } = useAuth();
+    const router = useRouter();
+    const [likes, setLikes] = useState<string[]>(post.likes || []);
+    const [isLiking, setIsLiking] = useState(false);
+
+    const isLiked = user && likes.includes(user.id);
+
+    const handleLike = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            router.push('/auth');
+            return;
+        }
+
+        if (isLiking) return;
+
+        setIsLiking(true);
+        try {
+            const res = await fetch(`/api/posts/${post._id || post.id}/like`, {
+                method: 'POST',
+            });
+            const data = await res.json();
+            if (data.success) {
+                setLikes(data.likes);
+            }
+        } catch (err) {
+            console.error('Error liking post:', err);
+        } finally {
+            setIsLiking(false);
+        }
+    };
 
     if (featured) {
         return (
@@ -51,11 +88,33 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
                                 <div className="text-zinc-100 text-sm font-semibold">{post.author}</div>
                                 <div className="text-zinc-600 text-xs">{post.date} · {post.readTime}</div>
                             </div>
-                            <div className="ml-auto flex items-center gap-2 text-violet-400 text-sm font-semibold group-hover:gap-3 transition-all">
-                                Read Story
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-                                </svg>
+                            <div className="ml-auto flex items-center gap-4">
+                                <button
+                                    onClick={handleLike}
+                                    disabled={isLiking}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer border ${isLiked
+                                        ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                                        : 'bg-zinc-900/50 text-zinc-400 border-zinc-800 hover:border-zinc-700'
+                                        }`}
+                                >
+                                    <svg
+                                        width="14"
+                                        height="14"
+                                        viewBox="0 0 24 24"
+                                        fill={isLiked ? "currentColor" : "none"}
+                                        stroke="currentColor"
+                                        strokeWidth="2.5"
+                                    >
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.77-8.77 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                                    </svg>
+                                    {likes.length}
+                                </button>
+                                <div className="flex items-center gap-2 text-violet-400 text-sm font-semibold group-hover:gap-3 transition-all">
+                                    Read Story
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -94,6 +153,29 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
                     <p className="text-zinc-500 text-sm leading-relaxed flex-1 mb-5">
                         {post.description}
                     </p>
+
+                    <div>
+                        <button
+                            onClick={handleLike}
+                            disabled={isLiking}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${isLiked
+                                ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                                : 'bg-zinc-900/50 text-zinc-400 border-zinc-800 hover:bg-violet-500/10 hover:text-violet-400 hover:border-violet-500/30'
+                                }`}
+                        >
+                            <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill={isLiked ? "currentColor" : "none"}
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                            >
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.77-8.77 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                            </svg>
+                            {isLiked ? 'Liked' : 'Like'} · {likes.length}
+                        </button>
+                    </div>
 
                     <div className="flex items-center gap-2 pt-4 border-t border-zinc-800/60 mt-auto">
                         <img src={post.authorAvatar} alt={post.author}
